@@ -11,7 +11,7 @@ from copy import deepcopy
 from functools import partial
 from itertools import chain
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QTextCursor
 from PyQt5.QtWidgets import *
 from src.base_ui import BasicWindow
 from src.ico import qt_resource_data
@@ -37,6 +37,7 @@ class Example(BasicWindow):
         初始化，
         """
         super().__init__()
+        self.__config__ = None
 
         self.load_default_settings()       # load default settings
         self.init_menu()
@@ -57,14 +58,15 @@ class Example(BasicWindow):
         u"""
         读取默认设置
         """
+
         try:
             if os.path.exists(__config__):
                 with open(__config__) as r:
                     self.__config__ = json.load(r)
-                return None
         except json.decoder.JSONDecodeError:
             pass
-        finally:
+
+        if self.__config__ is None:
             self.__config__ = {
                 "config": True,
                 "config_path": None,
@@ -250,6 +252,7 @@ class Example(BasicWindow):
                     cmds.append(key)
                     cmds.append(value)
         try:
+            self.output.clear()
             self.process.start(" ".join(cmds))
             self.command.setText(" ".join(cmds))
             self.start.setEnabled(False)
@@ -271,8 +274,10 @@ class Example(BasicWindow):
     u"""将process的输出转向textEdit"""
     def append(self, text):
         cursor = self.output.textCursor()
-        cursor.movePosition(cursor.End)
         cursor.insertText(text)
+
+        # 光标移到最后
+        self.output.moveCursor(QTextCursor.End)
 
     def stdoutReady(self):
         text = str(self.process.readAllStandardOutput(), 'utf-8')
