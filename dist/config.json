@@ -1,0 +1,15 @@
+{
+    "select": 0,
+    "config": [
+        {
+            "config": false,
+            "config_path": null,
+            "exe": null,
+            "paras": {
+                "-l": "8388",
+                "-r": "127.0.0.1",
+                "-p": "8388"
+            }
+        }
+    ]
+}
