@@ -39,8 +39,9 @@ GUI布局和功能上参考了[https://github.com/dfdragon/kcptun_gclient](https
 - 使用pyinstaller编译了一个Linux x64和一个win10，自己试了一下貌似可用，没多测试
 
 
-##### Pyinstaller打包
+### Pyinstaller打包
 ```bash
 # -F：打包为单文件；-w：不使用单独的console；--icon：添加icon
 pyinstaller -F -w --icon=./icon/k.ico main.py
 ```
+**发布提示出错，就将两个编译好的，放到dist下了**
