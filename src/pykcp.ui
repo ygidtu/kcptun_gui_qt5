@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1091</width>
-    <height>601</height>
+    <width>1306</width>
+    <height>627</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>220</x>
       <y>230</y>
       <width>632</width>
       <height>331</height>
@@ -318,7 +318,7 @@
    <widget class="QWidget" name="gridLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>220</x>
       <y>100</y>
       <width>631</width>
       <height>103</height>
@@ -372,7 +372,7 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>220</x>
       <y>80</y>
       <width>114</width>
       <height>18</height>
@@ -385,7 +385,7 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>220</x>
       <y>180</y>
       <width>337</width>
       <height>77</height>
@@ -398,7 +398,7 @@
    <widget class="QWidget" name="gridLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>860</x>
       <y>100</y>
       <width>431</width>
       <height>101</height>
@@ -489,7 +489,7 @@
    <widget class="QWidget" name="gridLayoutWidget_4">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>860</x>
       <y>230</y>
       <width>431</width>
       <height>281</height>
@@ -515,7 +515,7 @@
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>860</x>
       <y>520</y>
       <width>431</width>
       <height>51</height>
@@ -555,35 +555,35 @@
    <widget class="QWidget" name="gridLayoutWidget_5">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>220</x>
       <y>0</y>
       <width>1071</width>
       <height>80</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_6">
-     <item row="0" column="3">
-      <widget class="QPushButton" name="exe_select">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>浏览</string>
+        <string>KCPTun客户端路径</string>
        </property>
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QLineEdit" name="json_path">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3">
       <widget class="QPushButton" name="json_select">
        <property name="text">
         <string>浏览</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="0" column="2">
+      <widget class="QPushButton" name="exe_select">
+       <property name="text">
+        <string>浏览</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <widget class="QCheckBox" name="json">
        <property name="text">
         <string>使用配置文件（json）</string>
@@ -591,22 +591,13 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>KCPTun客户端路径</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
       <widget class="QLineEdit" name="executable"/>
      </item>
-     <item row="0" column="0">
-      <widget class="QComboBox" name="create">
-       <item>
-        <property name="text">
-         <string>create new</string>
-        </property>
-       </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="json_path">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
     </layout>
@@ -614,7 +605,7 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>860</x>
       <y>210</y>
       <width>57</width>
       <height>18</height>
@@ -627,7 +618,7 @@
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>860</x>
       <y>80</y>
       <width>57</width>
       <height>18</height>
@@ -635,6 +626,16 @@
     </property>
     <property name="text">
      <string>传输模式</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>151</width>
+      <height>401</height>
+     </rect>
     </property>
    </widget>
   </widget>
@@ -650,8 +651,8 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>929</x>
-     <y>546</y>
+     <x>1148</x>
+     <y>556</y>
     </hint>
     <hint type="destinationlabel">
      <x>919</x>
@@ -666,8 +667,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1052</x>
-     <y>544</y>
+     <x>1289</x>
+     <y>556</y>
     </hint>
     <hint type="destinationlabel">
      <x>1005</x>

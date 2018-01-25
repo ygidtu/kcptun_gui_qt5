@@ -20,6 +20,15 @@ from src.ico import qt_resource_data
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 __config__ = os.path.join(os.path.join(__dir__, "config.json"))
 
+DEFAULT_SETTING = {
+    "config": False,
+    "config_path": None,
+    "exe": None,
+    "paras": {
+        "-l": "8388", "-r": "127.0.0.1", "-p": "8388" 
+    }
+}
+
 
 def get_key_by_value(dict_, value_):
     for key, value in dict_.items():
@@ -41,55 +50,38 @@ class Example(BasicWindow):
         self.load_default_settings()       # load default settings
         self.init_menu()
         self.init_tray()
+        self.init_list()
         self.initUI()
         self.set_relation_between_inputs()
 
-        # 绑定一堆动作
-        self.exe_select.clicked.connect(partial(self.set_open_file_dialog, self.executable, True))
-        self.json_select.clicked.connect(partial(self.set_open_file_dialog, self.json_path, False))
-
-        self.start.clicked.connect(self.start_kcptun)
-        self.stop.clicked.connect(self.stop_kcptun)
-        self.process.readyReadStandardOutput.connect(self.stdoutReady)
-        self.process.readyReadStandardError.connect(self.stderrReady)
+        self.setFunctions()
 
     def load_default_settings(self):
         u"""
         读取默认设置
         """
-        try:
-            if os.path.exists(__config__):
+        if os.path.exists(__config__):
+            try:
                 with open(__config__) as r:
-                    self.__config__ = json.load(r)
-                return None
-        except json.decoder.JSONDecodeError:
-            pass
-        finally:
-            self.__config__ = {
-                "config": True,
-                "config_path": None,
-                "exe": None,
-                "paras": None
-            }
-            with open(__config__, "w+") as w:
-                json.dump(self.__config__, w, indent=4)
+                    self.__config_all__ = json.load(r)
 
-
-    def initUI(self):
+                    # if select doesn't exists, set default to 0
+                    select = self.__config_all__.get("select", 0)
+                    self.__config_all__.update({"select": select})
+                    self.__config__ = self.__config_all__["config"][select]
+                    return None
+            except json.decoder.JSONDecodeError:
+                pass
+    
+        self.__config__ = DEFAULT_SETTING
+        self.__config_all__ = {"select": 0, "config": [self.__config__]}
+        with open(__config__, "w+") as w:
+            json.dump(self.__config_all__, w, indent=4)
+        
+    def setSettings(self):
         u"""
-        设置GUI
+        set settings according to self.__config__
         """
-        # 打开在桌面中心
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
-        # 设置状态栏，左下角的状态信息
-        self.statusBar.showMessage('Kcptun GUI')
-        self.setWindowTitle('Kcptun GUI')
-        self.setWindowIcon(QIcon(":k.ico"))
-
         # 根据默认参数设置，根据是否使用config来设定参数
         if self.__config__["config"] is False:
             self.json.setChecked(False)
@@ -105,8 +97,12 @@ class Example(BasicWindow):
         # 设定程序或者json文件的路径
         if self.__config__["exe"]:
             self.executable.setText(self.__config__["exe"])
+        else:
+            self.executable.clear()
         if self.__config__["config_path"]:
             self.json_path.setText(self.__config__["config_path"])
+        else:
+            self.json_path.clear()
         
         # 设定其他参数
         if self.__config__["paras"]:
@@ -126,21 +122,53 @@ class Example(BasicWindow):
                     index = element.findText(value, Qt.MatchFixedString)
                     if index >= 0:
                         element.setCurrentIndex(index)
+
+    def initUI(self):
+        u"""
+        设置GUI
+        """
+        # 打开在桌面中心
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+        # 设置状态栏，左下角的状态信息
+        self.statusBar.showMessage('Kcptun GUI')
+        self.setWindowTitle('Kcptun GUI')
+        self.setWindowIcon(QIcon(":k.ico"))
+
+        self.setSettings()
+       
         self.show()
 
-    u"""设定菜单栏"""
+    # 菜单栏
     def init_menu(self):
+        u"""设定菜单栏"""
         # 添加菜单栏
+        fileMenu = self.menuBar().addMenu('&File')
+
+        about = QAction("About", self)
+        about.triggered.connect(self.About)
+        fileMenu.addAction(about)
+
         # 退出选项
         exitAct = QAction(QIcon('exit.png'), '&Exit', self)
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(qApp.quit)
-
-        # 菜单栏
-        fileMenu = self.menuBar().addMenu('&File')
         fileMenu.addAction(exitAct)
 
+
+    def About(self):
+        u"""
+        说明
+        """
+        reply = QMessageBox.question(self, 'About',
+                                     "This is the first PyQt5 application of mine, \n Barely able to use", QMessageBox.Yes, QMessageBox.Yes)
+        if reply == QMessageBox.Yes:
+            QMessageBox.Ignore
+            
     u"""系统托盘"""
     def init_tray(self):
         u"""
@@ -150,6 +178,16 @@ class Example(BasicWindow):
         self.tray_icon = QSystemTrayIcon(QIcon(os.path.join(__dir__, 'icon/k.png')), self)
         self.tray_icon.show()
         self.tray_icon.activated.connect(self.iconActivated)  
+
+    u"""设置listview"""
+    def init_list(self):
+        u"""
+        set list view
+        """
+        self.listView.clear()
+        for i in self.__config_all__["config"]:
+            self.listView.addItem("%s:%s" % (i["paras"]["-r"], i["paras"]["-p"]))
+        self.listView.setCurrentRow(self.__config_all__['select'])
 
     def iconActivated(self, reason):
         '''
@@ -310,11 +348,83 @@ class Example(BasicWindow):
         保存config
         """
         with open(__config__, "w") as w:
-            json.dump(self.__config__, w, indent=4)
+            json.dump(self.__config_all__, w, indent=4)
+        
+    u"""点击listWidget中内容以后，重新刷新所有配置"""
+    def resetParameters(self, select=None):
+        u"""
+        重置所有的参数
+        """
+        if select is None or isinstance(select, QModelIndex):
+            select = self.listView.currentRow()
 
+        self.__config__ = self.__config_all__["config"][select]
+        self.__config_all__.update({"select": select})
+        self.setSettings()
+        self.init_list()
+        self.save_config()
+
+    def createNewSetting(self):
+        u"""
+        新建新的配置
+        """
+        self.__config__ = DEFAULT_SETTING
+        configs = self.__config_all__.get("config", [])
+        configs.append(DEFAULT_SETTING)
+        self.__config_all__.update({
+            "config": configs
+        })
+        self.__config_all__.update({"select": len(self.__config_all__) - 1}) 
+        self.resetParameters()
+
+    def deleteSetting(self):
+        u"""
+        删除选中的配置
+        """
+        select = self.listView.currentRow()
+        self.__config_all__["config"].pop(select)
+        select = select - 1 if select - 1 > 0 else 0
+
+        self.__config_all__.update({"select": select})
+
+        if len(self.__config_all__["config"]) == 0:
+            self.__config_all__ = [DEFAULT_SETTING]
+        self.__config__ = self.__config_all__["config"][0]
+        self.resetParameters(select)
+
+    def exitApp(self):
+        u"""
+        退出动作
+        """
+        self.stop_kcptun()
+        self.tray_icon.hide()
+        self.close()
+
+    def setFunctions(self):
+        u"""
+        设定各个按钮的功能
+        """
+        self.hide_button.clicked.connect(self.hide)
+        self.quit.clicked.connect(self.exitApp)
+
+        # 绑定一堆动作
+        self.exe_select.clicked.connect(partial(self.set_open_file_dialog, self.executable, True))
+        self.json_select.clicked.connect(partial(self.set_open_file_dialog, self.json_path, False))
+
+        self.start.clicked.connect(self.start_kcptun)
+        self.stop.clicked.connect(self.stop_kcptun)
+        self.process.readyReadStandardOutput.connect(self.stdoutReady)
+        self.process.readyReadStandardError.connect(self.stderrReady)
+
+        self.listView.clicked['QModelIndex'].connect(self.resetParameters)
+
+        self.create.clicked.connect(self.createNewSetting)
+        self.delete.clicked.connect(self.deleteSetting)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())
+
+    
